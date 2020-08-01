@@ -1,4 +1,5 @@
 from tensorflow import keras
+import numpy as np
 
 
 class RNN:
@@ -10,23 +11,39 @@ class RNN:
         self.y_val = y_valid
         self.test_data = test_data
 
-    @staticmethod
-    def create_model():
+    def create_model(self):
+        # .reshape(450, 450, 1)
         model = keras.Sequential()
-        model.add(keras.layers.LSTM(input_shape=(None, 450, 450, 3)))
+        model.add(keras.layers.LSTM(150,
+                                    return_sequences=False,
+                                    ))
         model.add(keras.layers.Dense(100))
         model.add(keras.layers.Dense(100))
-        model.add(keras.layers.Dense(2, activation = "sigmoid"))
-
+        model.add(keras.layers.Dense(2,
+                                     activation = "sigmoid"))
         model.compile(optimizer="Adam",
-                      loss="mse")
+                      loss="mse",
+                      metrics=["acc"])
         return model
 
-    def fit(self):
+    def fit_and_test(self):
+        self.y_train = np.expand_dims(self.y_train, axis=-1)
+        self.y_val = np.expand_dims(self.y_val, axis=-1)
         model = self.create_model()
-        model.fit(self.x_train, self.y_train, validation=(self.x_val, self.y_val), batch_size=100, epochs=10, verbose=0)
+        print(self.x_train.shape, self.x_train[0].shape)
+        model.fit(self.x_train,
+                  self.y_train,
+                  validation_data=(self.x_val, self.y_val),
+                  batch_size=100,
+                  epochs=15,
+                  verbose=0)
         print(model.summary())
-        return model
+        try:
+            model.save("./RNN.model")
+        except:
+            print("Something wrong with the MODEL name or other...")
+        results = self.predict(model)
+        return results
 
     def predict(self, model):
         results = model.predict_classes(self.test_data)

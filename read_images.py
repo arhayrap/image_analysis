@@ -6,17 +6,19 @@ import os
 
 
 def get_data():
-    data = [{"image": [], "label": []},
-            {"image": [], "label": []},
-            {"image": [], "label": []}]
+    # data = [{"image": [], "label": []},
+    #         {"image": [], "label": []},
+    #         {"image": [], "label": []}]
 
-    start_end = [(0, 4),
-                 (4, 8),
-                 (8, 12)]
+    # start_end = [(0, 2),
+    #              (2, 4),
+    #              (4, None)]
 
+    data = [{"image": [], "label": []}]
+    start_end = [(0, 1)]
 
     for u in range(len(start_end)):
-        path = "../samples_Aram"
+        path = "../../samples_Aram"
         m_path = path
         for i in os.listdir(m_path):
             m_path = path + "/" + i
@@ -25,17 +27,27 @@ def get_data():
                     print(j)
                     if os.path.isdir(m_path + "/" + j):
                         n_path = m_path + "/" + j
-                        for k in os.listdir(n_path + "/" + j):
+                        for k in os.listdir(n_path):
                             if k == "cop":
-                                k_path = n_path + "/" + j + "/" + k
+                                k_path = n_path + "/" + k
                                 for t in os.listdir(k_path):
-                                    data[u]["image"].append(cv2.resize(cv2.imread(k_path + "/" + t), (450, 450)))
-                                    data[u]["label"].append(0)
+                                    try:
+                                        data[u]["image"].append(np.array(cv2.resize(cv2.cvtColor(cv2.imread(k_path + "/" + t),
+                                                                                        cv2.COLOR_BGR2GRAY),
+                                                                           (450, 450))))
+                                        data[u]["label"].append(0)
+                                    except:
+                                        print(k_path + "/" + t)
                             elif k == "gen":
-                                k_path = n_path + "/" + j + "/" + k
+                                k_path = n_path + "/" + k
                                 for t in os.listdir(k_path):
-                                    data[u]["image"].append(cv2.resize(cv2.imread(k_path + "/" + t), (450, 450)))
-                                    data[u]["label"].append(1)
+                                    try:
+                                        data[u]["image"].append(np.array(cv2.resize(cv2.cvtColor(cv2.imread(k_path + "/" + t),
+                                                                                        cv2.COLOR_BGR2GRAY),
+                                                                           (450, 450))))
+                                        data[u]["label"].append(1)
+                                    except:
+                                        print(k_path + "/" + t)
                             else:
                                 continue
                     else:
@@ -43,10 +55,11 @@ def get_data():
             else:
                 continue
 
-    tdata = {"image": []}
-    data = pd.DataFrame({"image": data[0]["image"] + data[1]["image"] + data[2]["image"],
-                        "label": data[0]["label"] + data[1]["label"] + data[2]["label"]})
-    path = "../samples_Aram"
+    tdata = []
+    # data = pd.DataFrame({"image": data[0]["image"] + data[1]["image"] + data[2]["image"],
+    #                     "label": data[0]["label"] + data[1]["label"] + data[2]["label"]})
+    data = pd.DataFrame(data[0])
+    path = "../../samples_Aram"
     m_path = path
     for i in os.listdir(m_path):
         m_path = path + "/" + i
@@ -54,11 +67,13 @@ def get_data():
             for j in os.listdir(m_path):
                 n_path = m_path + "/" + j
                 for k in os.listdir(n_path):
-                    tdata["image"].append(cv2.imread(n_path + "/" + k))
+                    tdata.append(np.array(cv2.resize(cv2.cvtColor(cv2.imread(n_path + "/" + k),
+                                                                  cv2.COLOR_BGR2GRAY),
+                                                     (450, 450))))
         else:
             continue
 
-    t_data = pd.DataFrame(tdata)
+    t_data = np.array(tdata)
 
     return data, t_data
 

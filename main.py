@@ -21,15 +21,25 @@ def main():
     for i in ts_paths:
         test_data = pd.concat([test_data, pd.read_csv(i)], axis=0, sort=False)
     '''
-
-    train_valid_data = shuffle(get_data()[0])
-    test_data = shuffle(get_data()[1])
-    X_train, X_valid, Y_train, Y_valid = train_test_split(train_valid_data["image"], train_valid_data["label"], test_size=0.25)
-    model = RNN(X_train, X_valid, Y_train, Y_valid, test_data.create_model())
-    # plt.imshow(np.array(np.array(X_train[0])))
-    # print(Y_valid.head())
-    # print(test_data.shape)
+    data = get_data()
+    train_valid_data = shuffle(data[0])
+    test_data = shuffle(data[1])
+    print("Data has been collected!")
+    x_train, x_valid, y_train, y_valid = train_test_split(np.array(train_valid_data["image"]),
+                                                          np.array(train_valid_data["label"]),
+                                                          test_size=0.25)
+    # x_train = x_train.to_numpy()
+    # x_valid = x_valid.to_numpy()
+    # y_train = y_train.to_numpy()
+    # y_valid = y_valid.to_numpy()
+    print(x_train)
+    print(x_train.shape, x_train[0].shape)
+    model = RNN(x_train,  y_train, x_valid, y_valid, test_data)
+    print("Model training process")
+    results = model.fit_and_test()
+    print("The results are ready!")
+    return results
 
 
 if __name__ == "__main__":
-    main()
+    print(main())
