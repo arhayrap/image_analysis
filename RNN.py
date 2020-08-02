@@ -14,14 +14,31 @@ class RNN:
     def create_model(self):
         # .reshape(450, 450, 1)
         model = keras.Sequential()
-        # model.add(keras.layers.Embedding(len(self.x_train), 450, input_length=450))
-        model.add(keras.layers.LSTM(100,
-                                    return_sequences=False, input_shape=(None, 450)))
-        model.add(keras.layers.Dense(100))
-        model.add(keras.layers.Dense(100))
+        model.add(keras.layers.GRU(150,
+                                         return_sequences=False, input_shape=(None, 450)))
+        # model.add(keras.layers.Dropout(0.1))
+
+        '''
+        model.add(keras.layers.SimpleRNN(150, return_sequences=True))
+        model.add(keras.layers.Dropout(0.2))
+
+        model.add(keras.layers.SimpleRNN(150, return_sequences=True))
+        model.add(keras.layers.Dropout(0.2))
+        
+
+        model.add(keras.layers.Dense(100,
+                                     activation="relu"))
+        '''
+
+        model.add(keras.layers.Dense(100,
+                                     activation="relu"))
+        model.add(keras.layers.Dense(100,
+                                     activation="relu"))
         model.add(keras.layers.Dense(2,
                                      activation="sigmoid"))
-        model.compile(optimizer="rmsprop",
+
+        model.compile(
+                      optimizer="rmsprop",
                       loss="sparse_categorical_crossentropy",
                       metrics=["acc"]
                       )
@@ -35,14 +52,14 @@ class RNN:
         model.fit(self.x_train,
                   self.y_train,
                   validation_data=(self.x_val, self.y_val),
-                  batch_size=100,
-                  epochs=15,
-                  verbose=0)
+                  batch_size=20,
+                  epochs=8)
         print(model.summary())
-        try:
-            model.save("./RNN.model")
-        except:
-            print("Something wrong with the MODEL name or other...")
+        # try:
+        #     model.save("./RNN.model")
+        # except:
+        #     print("Something wrong with the MODEL name or other...")
+        model.save("weights")
         results = self.predict(model)
         return results
 
