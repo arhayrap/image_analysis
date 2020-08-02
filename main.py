@@ -22,8 +22,12 @@ def main():
         test_data = pd.concat([test_data, pd.read_csv(i)], axis=0, sort=False)
     '''
     data = get_data()
-    train_valid_data = shuffle(data[0])
-    test_data = shuffle(data[1])
+    train_valid_data = data[0]
+    test_data = data[1]
+    print(data[0]["image"].shape, type(data[0]["image"]))
+    print(data[1].shape, type(data[1]))
+    # print(pd.DataFrame(data[0]))
+
     print("Data has been collected!")
     x_train, x_valid, y_train, y_valid = train_test_split(np.array(train_valid_data["image"]),
                                                           np.array(train_valid_data["label"]),

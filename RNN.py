@@ -14,23 +14,24 @@ class RNN:
     def create_model(self):
         # .reshape(450, 450, 1)
         model = keras.Sequential()
-        model.add(keras.layers.LSTM(150,
-                                    return_sequences=False,
-                                    ))
+        # model.add(keras.layers.Embedding(len(self.x_train), 450, input_length=450))
+        model.add(keras.layers.LSTM(100,
+                                    return_sequences=False, input_shape=(None, 450)))
         model.add(keras.layers.Dense(100))
         model.add(keras.layers.Dense(100))
         model.add(keras.layers.Dense(2,
-                                     activation = "sigmoid"))
-        model.compile(optimizer="Adam",
-                      loss="mse",
-                      metrics=["acc"])
+                                     activation="sigmoid"))
+        model.compile(optimizer="rmsprop",
+                      loss="sparse_categorical_crossentropy",
+                      metrics=["acc"]
+                      )
         return model
 
     def fit_and_test(self):
         self.y_train = np.expand_dims(self.y_train, axis=-1)
         self.y_val = np.expand_dims(self.y_val, axis=-1)
+        print(self.y_train.shape)
         model = self.create_model()
-        print(self.x_train.shape, self.x_train[0].shape)
         model.fit(self.x_train,
                   self.y_train,
                   validation_data=(self.x_val, self.y_val),
